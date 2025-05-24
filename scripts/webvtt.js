@@ -669,6 +669,24 @@
 		while (state.text[0] === '\t' || state.text[0] === ' ') {
 			cut(state, 1);
 		}
+		// Remove trailing spaces or tabs, but don't remove newlines
+		// Split the text by newline characters, including sequences of newlines, to process each segment
+		var segments = state.text.split(/(\n+)/);
+		// Process each segment to remove trailing spaces or tabs before newline sequences
+		segments = segments.map(function (segment) {
+			// Only process segments that are not just newline sequences
+			if (!segment.match(/^\n+$/)) {
+				var endIndex = segment.length - 1;
+				while (	endIndex >= 0 && ( segment[endIndex] === " " || segment[endIndex] === "\t" ) ) {
+					endIndex--;
+				}
+				return segment.substring(0, endIndex + 1);
+			}
+			return segment;
+		});
+
+		// Rejoin the segments, preserving newline sequences
+		state.text = segments.join("");
 	}
 
 	function eatAtLeast1SpacesOrTabs(state) {
